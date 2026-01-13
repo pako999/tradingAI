@@ -48,3 +48,20 @@ export async function getLiquidityMap(ticker: string): Promise<LiquidityZone[]> 
     if (!res.ok) throw new Error('Failed to fetch Liquidity Map');
     return res.json();
 }
+
+export interface HistoricalSignal {
+    id: number;
+    ticker: string;
+    timestamp: string;
+    signal_type: string;
+    entry_price: number;
+    confidence: number;
+    outcome: string;
+    pnl_percent: number;
+}
+
+export async function getSignalHistory(): Promise<HistoricalSignal[]> {
+    const res = await fetch(`${API_URL}/history/signals`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch Signal History');
+    return res.json();
+}
