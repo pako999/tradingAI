@@ -8,6 +8,7 @@ import LogicBreakdown from '@/components/LogicBreakdown';
 import LiquidityHeatmap from '@/components/LiquidityHeatmap';
 import TradeSignalCard from '@/components/TradeSignalCard';
 import SignalHistoryLog from '@/components/SignalHistoryLog';
+import AuthButton from '@/components/AuthButton';
 import { Zap, Lock } from 'lucide-react';
 
 export default function Home() {
@@ -45,6 +46,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-8 md:p-12 relative overflow-hidden bg-[#050505]">
+      {/* Top Bar */}
+      <div className="absolute top-6 right-8 z-20">
+        <AuthButton />
+      </div>
+
       {/* Header */}
       <div className="text-center z-10 mb-8">
         <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full glass-panel text-xs font-mono text-amber-300 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
