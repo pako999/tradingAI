@@ -6,4 +6,7 @@ pandas==2.2.0
 numpy==1.26.3
 u8darts[torch]
 scikit-learn
+sqlalchemy==2.0.25
+apscheduler==3.10.4
+
 

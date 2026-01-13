@@ -1,9 +1,45 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from engine import WeightedConsensusEngine
+from contextlib import asynccontextmanager
+from database import init_db, get_db, SessionLocal, Signal
+from scheduler import start_scheduler
+from sqlalchemy.orm import Session
 import os
+from engine import WeightedConsensusEngine
 
-app = FastAPI(title="AlphaPulse 2026 API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    init_db()
+    start_scheduler()
+    yield
+    # Shutdown
+    pass
+
+app = FastAPI(title="AlphaPulse 2026 API", lifespan=lifespan)
+
+# --- HISTORY ENDPOINTS ---
+
+@app.get("/history/signals")
+def get_signal_history(db: Session = Depends(get_db)):
+    """
+    Fetch last 50 signals for transparency.
+    """
+    return db.query(Signal).order_by(Signal.timestamp.desc()).limit(50).all()
+
+@app.get("/history/performance")
+def get_performance_stats(db: Session = Depends(get_db)):
+    """
+    Mock Performance Stats (until we have real historical data outcome checking).
+    """
+    return {
+        "acc_win_rate": 78.4,
+        "total_pnl_30d": 342.5,  # Percentage
+        "active_streak": 4
+    }
+
+# Configure CORS
+
 
 # Configure CORS
 # In production, specific domains should be set.

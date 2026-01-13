@@ -7,6 +7,7 @@ import TickerSearch from '@/components/TickerSearch';
 import LogicBreakdown from '@/components/LogicBreakdown';
 import LiquidityHeatmap from '@/components/LiquidityHeatmap';
 import TradeSignalCard from '@/components/TradeSignalCard';
+import SignalHistoryLog from '@/components/SignalHistoryLog';
 import { Zap, Lock } from 'lucide-react';
 
 export default function Home() {
@@ -107,6 +108,9 @@ export default function Home() {
             </div>
 
             <LogicBreakdown data={data} />
+
+            {/* History Log */}
+            <SignalHistoryLog />
           </div>
 
         </div>
