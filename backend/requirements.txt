@@ -8,5 +8,7 @@ u8darts[torch]
 scikit-learn
 sqlalchemy==2.0.25
 apscheduler==3.10.4
+psycopg2-binary==2.9.9
+
 
 
