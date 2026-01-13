@@ -31,7 +31,7 @@ export default function Home() {
       <div className="text-center z-10 mb-12">
         <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full glass-panel text-xs font-mono text-sky-300 border-sky-500/20">
           <Zap className="w-3 h-3 fill-current" />
-          ALPHAPULSE SYSTEM v2026.1
+          ALPHAPULSE SYSTEM v2026.2
         </div>
         <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-500 tracking-tight">
           AlphaPulse
