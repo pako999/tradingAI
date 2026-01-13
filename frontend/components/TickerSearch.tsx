@@ -25,10 +25,12 @@ export default function TickerSearch({ onSearch, loading }: TickerSearchProps) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="ENTER TOKEN (e.g. BTC)"
-                className="glass-input w-full pl-12 pr-4 uppercase tracking-widest font-mono"
+                className="glass-input w-full pl-4 pr-32 uppercase tracking-widest font-mono"
                 disabled={loading}
             />
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-400 transition-colors">
+
+            {/* Search Icon / Loader - Positioned to the right, left of the button */}
+            <div className="absolute right-24 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-400 transition-colors pointer-events-none">
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
             </div>
 
