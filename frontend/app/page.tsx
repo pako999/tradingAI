@@ -9,7 +9,7 @@ import LiquidityHeatmap from '@/components/LiquidityHeatmap';
 import TradeSignalCard from '@/components/TradeSignalCard';
 import SignalHistoryLog from '@/components/SignalHistoryLog';
 import AuthButton from '@/components/AuthButton';
-import { Zap, Lock } from 'lucide-react';
+import { Zap, Lock, Rocket, Smartphone } from 'lucide-react';
 import PricingModal from '@/components/PricingModal';
 
 export default function Home() {
@@ -58,19 +58,68 @@ export default function Home() {
       {/* Pricing Modal */}
       <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
 
-      {/* Header */}
-      <div className="text-center z-10 mb-8">
-        <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full glass-panel text-xs font-mono text-amber-300 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+      {/* Header & Hero */}
+      <div className="text-center z-10 mb-12 max-w-4xl">
+        <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full glass-panel text-xs font-mono text-amber-300 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
           <Zap className="w-3 h-3 fill-current text-amber-400" />
           <span className="tracking-widest">ALPHAPULSE PRO v2026.5</span>
         </div>
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter gold-gradient-text drop-shadow-2xl mb-2">
-          AlphaPulse
+
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6 drop-shadow-2xl">
+          <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-neutral-500">Alpha</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-200">Pulse</span>
         </h1>
+
+        <p className="text-xl md:text-2xl text-neutral-400 font-light mb-10 max-w-2xl mx-auto">
+          Institutional-Grade AI Signals & Whale Tracking for Everyone.
+        </p>
+
+        {/* Feature Grid (Value Props) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          {/* Card 1 */}
+          <div onClick={() => setShowPricing(true)} className="glass-panel p-6 border-white/5 hover:border-amber-500/30 transition-all cursor-pointer group text-left">
+            <div className="mb-4 bg-gradient-to-br from-amber-500/20 to-amber-900/10 w-12 h-12 rounded-xl flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
+              <Rocket className="w-6 h-6 text-amber-400" />
+            </div>
+            <h3 className="font-bold text-white mb-1">AI Trade Signals</h3>
+            <p className="text-xs text-neutral-500">83% Win Rate algorithm scanning 100+ pairs 24/7.</p>
+          </div>
+
+          {/* Card 2 - Telegram */}
+          <div onClick={() => setShowPricing(true)} className="glass-panel p-6 border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group text-left relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-2"><div className="w-2 h-2 bg-red-500 rounded-full animate-ping" /></div>
+            <div className="mb-4 bg-gradient-to-br from-blue-500/20 to-blue-900/10 w-12 h-12 rounded-xl flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
+              <Smartphone className="w-6 h-6 text-blue-400" />
+            </div>
+            <h3 className="font-bold text-white mb-1">Telegram Alerts</h3>
+            <p className="text-xs text-neutral-500">Instant phone notifications. Never miss a pump again.</p>
+          </div>
+
+          {/* Card 3 - Whales */}
+          <div onClick={() => setShowPricing(true)} className="glass-panel p-6 border-white/5 hover:border-purple-500/30 transition-all cursor-pointer group text-left">
+            <div className="mb-4 bg-gradient-to-br from-purple-500/20 to-purple-900/10 w-12 h-12 rounded-xl flex items-center justify-center border border-purple-500/20 group-hover:scale-110 transition-transform">
+              <Lock className="w-6 h-6 text-purple-400" />
+            </div>
+            <h3 className="font-bold text-white mb-1">Whale Heatmaps</h3>
+            <p className="text-xs text-neutral-500">See where Smart Money is executing hidden orders.</p>
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <button
+          onClick={() => setShowPricing(true)}
+          className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-xl font-black uppercase tracking-widest text-black shadow-[0_0_40px_rgba(245,158,11,0.4)] hover:shadow-[0_0_60px_rgba(245,158,11,0.6)] hover:scale-105 transition-all duration-300"
+        >
+          <span className="flex items-center gap-2">
+            <Zap className="w-5 h-5 fill-black" />
+            Get Instant Alerts
+          </span>
+          <div className="absolute inset-0 rounded-xl ring-2 ring-white/50 animate-pulse group-hover:ring-white/80" />
+        </button>
       </div>
 
       {/* Search */}
-      <div className="w-full z-10 mb-10">
+      <div className="w-full z-10 mb-10 max-w-2xl">
         <TickerSearch onSearch={handleSearch} loading={loading} />
       </div>
 
