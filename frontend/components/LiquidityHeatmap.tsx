@@ -7,57 +7,52 @@ interface Props {
 }
 
 export default function LiquidityHeatmap({ data }: Props) {
-    // Find max price to scale visual
-    const maxPrice = Math.max(...data.map(d => d.price_level)) * 1.05;
-    const minPrice = Math.min(...data.map(d => d.price_level)) * 0.95;
+    if (!data || data.length === 0) return (
+        <div className="glass-panel p-6 flex items-center justify-center min-h-[300px]">
+            <div className="text-neutral-500 text-xs animate-pulse">Scanning Orderbooks...</div>
+        </div>
+    );
+
+    // Sort by price descending
+    const sortedZones = [...data].sort((a, b) => b.price_level - a.price_level).slice(0, 15);
 
     return (
-        <div className="glass-panel p-6 border-amber-500/20 w-full relative overflow-hidden">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-neutral-300 font-bold tracking-wide text-sm flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    LIQUIDATION HEATMAP (Binance/Bybit)
-                </h3>
-                <span className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-1 rounded border border-amber-500/20">LIVE FEED</span>
-            </div>
+        <div className="glass-panel p-6 relative overflow-hidden group">
+            <h3 className="text-xs font-bold text-neutral-500 mb-6 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse" />
+                LIQUIDITY HEATMAP
+            </h3>
 
-            <div className="relative h-48 w-full bg-black/40 rounded-lg border border-white/5 flex items-center justify-around px-4">
-                {/* Grid Lines */}
-                <div className="absolute inset-0 grid grid-rows-4 w-full h-full pointer-events-none opacity-10">
-                    <div className="border-b border-white"></div>
-                    <div className="border-b border-white"></div>
-                    <div className="border-b border-white"></div>
-                    <div className="border-b border-white"></div>
-                </div>
-
-                {data.map((zone, i) => (
-                    <div key={i} className="relative group flex flex-col items-center gap-2 z-10 w-full">
+            <div className="flex items-end justify-between gap-1 h-32 mt-8">
+                {sortedZones.map((zone, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2 flex-1 group/bar relative">
                         {/* Heat Bar */}
                         <div
-                            className={`w-16 rounded-t-sm transition-all duration-500 group-hover:scale-110 
-                ${(zone.intensity || 0) > 80 ? 'h-32 bg-gradient-to-t from-red-600 to-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]' :
-                                    (zone.intensity || 0) > 50 ? 'h-24 bg-gradient-to-t from-orange-600 to-orange-400 opacity-90' : 'h-16 bg-gradient-to-t from-yellow-600 to-yellow-400 opacity-80'}`}
+                            className={`w-full rounded-t-sm transition-all duration-500 
+                ${(zone.intensity || 0) > 80 ? 'h-full bg-gradient-to-t from-red-600 to-red-400 shadow-[0_0_15px_rgba(239,68,68,0.4)]' :
+                                    (zone.intensity || 0) > 50 ? 'h-2/3 bg-gradient-to-t from-orange-600 to-orange-400 opacity-90' : 'h-1/3 bg-gradient-to-t from-yellow-600 to-yellow-400 opacity-80'}`}
                         >
-                            <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-3 py-1.5 rounded shadow-xl text-center min-w-[120px] transition-opacity pointer-events-none z-20 backdrop-blur-md">
-                                <div className="text-[10px] text-neutral-400 font-mono">{zone.type}</div>
-                                <div className="text-amber-400 font-bold font-mono text-xs">{zone.leverage_tier} Leverage</div>
-                            </div>
-                        </div>
-
-                        {/* Label */}
-                        <div className="text-center">
-                            <div className="text-neutral-200 font-mono text-sm font-bold">${zone.price_level.toLocaleString()}</div>
-                            <div className={`text-[9px] uppercase tracking-wider ${zone.liquidity_intensity === 'Extreme' ? 'text-red-500' : 'text-amber-500'}`}>
-                                {zone.liquidity_intensity} VOL
+                            <div className="opacity-0 group-hover/bar:opacity-100 absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-neutral-900 border border-white/10 px-3 py-2 rounded shadow-xl text-center min-w-[120px] pointer-events-none z-20 backdrop-blur-md">
+                                <div className="text-[10px] text-neutral-400 font-mono uppercase mb-1">{zone.type} WALL</div>
+                                <div className="text-xs font-bold text-white mb-1">
+                                    ${zone.price_level.toLocaleString()}
+                                </div>
+                                <div className="text-[10px] mt-1 text-white/50 border-t border-white/10 pt-1">
+                                    Vol: ${(zone.volume_estimated / 1000000).toFixed(1)}M
+                                    <div className={`text-xs font-bold ${(zone.intensity || 0) > 80 ? 'text-red-400' : 'text-yellow-400'}`}>
+                                        {(zone.intensity || 0) > 80 ? 'Extreme' : 'Moderate'} ({zone.intensity}%)
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <p className="text-[10px] text-neutral-600 mt-4 text-center max-w-lg mx-auto">
-                * "Extreme" zones indicate potential forced liquidations of over-leveraged positions. These often act as "Magnets" for price action.
-            </p>
+            <div className="flex justify-between mt-4 text-[10px] text-neutral-600 font-mono">
+                <span>${sortedZones[sortedZones.length - 1]?.price_level.toLocaleString()}</span>
+                <span>${sortedZones[0]?.price_level.toLocaleString()}</span>
+            </div>
         </div>
     );
 }
