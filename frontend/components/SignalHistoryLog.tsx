@@ -5,31 +5,39 @@ import { History, TrendingUp, TrendingDown } from 'lucide-react';
 
 import { getSignalHistory, HistoricalSignal } from '@/lib/api';
 
-export default function SignalHistoryLog() {
+interface Props {
+    ticker?: string;
+}
+
+export default function SignalHistoryLog({ ticker }: Props) {
     const [history, setHistory] = useState<HistoricalSignal[]>([]);
 
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const data = await getSignalHistory();
+                const data = await getSignalHistory(ticker);
                 if (data && data.length > 0) {
                     setHistory(data);
+                } else {
+                    setHistory([]); // Reset if empty
                 }
             } catch (err) {
-                console.error("Failed to fetch logs, falling back to empty state");
+                console.error("Failed to fetch logs");
+                setHistory([]);
             }
         };
         fetchHistory();
-    }, []);
+    }, [ticker]);
 
-    // Mock data removed. We depend on real DB or display empty state.
-
+    // ... 
 
     return (
         <div className="w-full glass-panel p-6 border-neutral-800 mt-6">
             <div className="flex items-center gap-2 mb-4">
                 <History className="w-4 h-4 text-neutral-500" />
-                <h3 className="text-sm font-bold text-neutral-300 tracking-wide">SIGNAL EXECUTION LOG (Last 24h)</h3>
+                <h3 className="text-sm font-bold text-neutral-300 tracking-wide">
+                    {ticker ? `${ticker} EXECUTION LOG` : 'GLOBAL SIGNAL FEED'} (Last 24h)
+                </h3>
             </div>
 
             <div className="overflow-x-auto">

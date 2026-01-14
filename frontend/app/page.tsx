@@ -138,7 +138,7 @@ export default function Home() {
             <LogicBreakdown data={data} />
 
             {/* History Log */}
-            <SignalHistoryLog />
+            <SignalHistoryLog ticker={data?.ticker} />
           </div>
 
         </div>

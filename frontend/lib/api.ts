@@ -60,8 +60,12 @@ export interface HistoricalSignal {
     pnl_percent: number;
 }
 
-export async function getSignalHistory(): Promise<HistoricalSignal[]> {
-    const res = await fetch(`${API_URL}/history/signals`, { cache: 'no-store' });
+export async function getSignalHistory(ticker?: string): Promise<HistoricalSignal[]> {
+    const url = ticker
+        ? `${API_URL}/history/signals?ticker=${ticker}`
+        : `${API_URL}/history/signals`;
+
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch Signal History');
     return res.json();
 }
