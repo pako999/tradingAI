@@ -97,7 +97,18 @@ export async function getSignalHistory(ticker?: string): Promise<HistoricalSigna
 }
 
 export async function getNews(): Promise<NewsItem[]> {
-    const res = await fetch(`${API_URL}/news`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch News');
-    return res.json();
-}
+    export interface WhaleTrade {
+        Block: { Time: string };
+        Trade: {
+            Amount: string;
+            Price: number;
+            Side: { Currency: { Symbol: string } };
+        };
+        Transaction: { Hash: string };
+    }
+
+    export async function getWhaleActivity(ticker: string): Promise<WhaleTrade[]> {
+        const res = await fetch(`${API_URL}/pro/whales/${ticker}`, { cache: 'no-store' });
+        if (!res.ok) return []; // Return empty if failed (e.g. no API key)
+        return res.json();
+    }
