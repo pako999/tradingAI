@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 import requests
 import xml.etree.ElementTree as ET
 from engine import WeightedConsensusEngine
+from services.intelligence import AlphaIntelligenceEngine
+from services.bitquery import BitqueryClient  # Import Bitquery Service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +24,33 @@ async def lifespan(app: FastAPI):
     pass
 
 app = FastAPI(title="AlphaPulse 2026 API", lifespan=lifespan)
+
+# Configure CORS
+origins = [
+    "http://localhost:3000",
+    "https://alphapulse-frontend.vercel.app",  # Example Vercel app
+    "*" # Allowing all for now to ensure smooth dev/demo
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+engine = WeightedConsensusEngine()
+ai_engine = AlphaIntelligenceEngine()
+bitquery_client = BitqueryClient()  # Initialize Bitquery Client
+
+@app.get("/")
+def read_root():
+    return {"status": "AlphaPulse Brain is Active", "version": "v2026.4"}
+
+@app.get("/predict/{ticker}")
+def get_prediction(ticker: str):
+    return engine.analyze_ticker(ticker)
 
 # --- HISTORY ENDPOINTS ---
 
@@ -82,43 +111,6 @@ def get_performance_stats(db: Session = Depends(get_db)):
         "active_streak": 4
     }
 
-# Configure CORS
-
-
-# Configure CORS
-# In production, specific domains should be set.
-origins = [
-    "http://localhost:3000",
-    "https://alphapulse-frontend.vercel.app",  # Example Vercel app
-    "*" # Allowing all for now to ensure smooth dev/demo
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-engine = WeightedConsensusEngine()
-
-from services.intelligence import AlphaIntelligenceEngine
-from typing import Optional
-
-# ... previous imports
-
-# Initialize Pro Engine
-ai_engine = AlphaIntelligenceEngine()
-
-@app.get("/")
-def read_root():
-    return {"status": "AlphaPulse Brain is Active", "version": "v2026.4"}
-
-@app.get("/predict/{ticker}")
-def get_prediction(ticker: str):
-    return engine.analyze_ticker(ticker)
-
 # --- PRO ENDPOINTS ---
 
 @app.get("/pro/forecast/{ticker}")
@@ -147,6 +139,25 @@ def get_liquidity_map(ticker: str, tier: str = "FREE"):
     if tier != "PRO":
         return {"error": "Upgrade to PRO for Liquidity Maps"}
     return ai_engine.get_liquidation_heatmap(ticker.upper())
+
+@app.get("/pro/whales/{ticker}")
+def get_whale_activity(ticker: str):
+    """
+    Fetches real-time whale trades (> $10k) from Bitquery.
+    """
+    # Simple mapping for major tokens to their contract addresses for DEX queries
+    token_map = {
+        "ETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", # WETH
+        "SOL": "So11111111111111111111111111111111111111112", # Wrapped SOL
+        "USDT": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+    }
+    
+    # Use mapped address or fallback to ticker (assuming it might be an address)
+    token_address = token_map.get(ticker.upper(), ticker)
+    
+    network = "solana" if ticker.upper() == "SOL" else "ethereum"
+    
+    return bitquery_client.get_whale_trades(network=network, currency_address=token_address)
 
 @app.get("/news")
 def get_crypto_news():
