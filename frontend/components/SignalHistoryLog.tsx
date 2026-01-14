@@ -19,14 +19,20 @@ export default function SignalHistoryLog({ ticker }: Props) {
                 if (data && data.length > 0) {
                     setHistory(data);
                 } else {
-                    setHistory([]); // Reset if empty
+                    if (!ticker) setHistory([]); // Only reset if not searching specific ticker (avoids flicker)
                 }
             } catch (err) {
                 console.error("Failed to fetch logs");
-                setHistory([]);
             }
         };
+
+        // Initial Fetch
         fetchHistory();
+
+        // Real-Time Polling (Every 10s)
+        const interval = setInterval(fetchHistory, 10000);
+
+        return () => clearInterval(interval);
     }, [ticker]);
 
     // ... 
