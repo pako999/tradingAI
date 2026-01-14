@@ -1,58 +1,81 @@
-import { Activity, BarChart3, Globe } from 'lucide-react';
+'use client';
 import { AnalysisResult } from '@/lib/api';
+import { Globe, BarChart2, Zap } from 'lucide-react';
 
-export default function LogicBreakdown({ data }: { data: AnalysisResult }) {
-    const components = [
+interface Props {
+    data: AnalysisResult;
+}
+
+export default function LogicBreakdown({ data }: Props) {
+    // Helper to convert sentiment strings to 0-100 scores for visualization
+    const getScore = (val: string) => {
+        if (!val) return 50;
+        const v = val.toLowerCase();
+        if (v.includes('bullish') || v.includes('buying') || v.includes('high')) return 85;
+        if (v.includes('bearish') || v.includes('selling') || v.includes('low')) return 30;
+        return 50;
+    };
+
+    const sections = [
         {
             title: "Macro Consensus",
             icon: Globe,
-            score: data.components.macro.score,
-            desc: data.components.macro.desc,
+            // Map new API fields
+            score: getScore(data.macro.trend),
+            desc: `Trend: ${data.macro.trend} | Volatility: ${data.macro.volatility}`,
             weight: "30%"
         },
         {
-            title: "On-Chain Activity",
-            icon: Activity,
-            score: data.components.onchain.score,
-            desc: data.components.onchain.desc,
+            title: "On-Chain Whales",
+            icon: BarChart2,
+            score: getScore(data.onchain.net_flow),
+            desc: `Net Flow: ${data.onchain.net_flow} | Activity: ${data.onchain.whale_activity}`,
             weight: "40%"
         },
         {
-            title: "Derivatives Market",
-            icon: BarChart3,
-            score: data.components.derivatives.score,
-            desc: data.components.derivatives.desc,
+            title: "Derivatives Data",
+            icon: Zap,
+            score: data.derivatives.long_short_ratio * 50, // simple heuristic
+            desc: `L/S Ratio: ${data.derivatives.long_short_ratio}`,
             weight: "30%"
         }
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-5xl mx-auto mt-8">
-            {components.map((c, i) => (
-                <div key={i} className="glass-panel p-6 hover:bg-neutral-900/60 transition-all group border-amber-500/10 hover:border-amber-500/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-2.5 rounded-xl bg-neutral-900/80 text-amber-500 group-hover:text-amber-300 group-hover:scale-110 transition-all shadow-inner shadow-black/50 border border-white/5">
-                            <c.icon className="w-5 h-5" />
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 mt-6">
+            <h3 className="text-white font-bold mb-6 flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                AI LOGIC BREAKDOWN
+            </h3>
+
+            <div className="space-y-6">
+                {sections.map((s, i) => (
+                    <div key={i} className="group">
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center gap-3 text-neutral-300">
+                                <s.icon className="w-4 h-4 text-neutral-500" />
+                                <span className="font-mono text-sm">{s.title}</span>
+                            </div>
+                            <div className="text-xs text-neutral-600 font-mono">Weight: {s.weight}</div>
                         </div>
-                        <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase border border-neutral-800 px-2 py-0.5 rounded-full">Weight: {c.weight}</span>
-                    </div>
 
-                    <h4 className="text-neutral-200 font-bold mb-2 tracking-wide text-sm">{c.title}</h4>
-                    <p className="text-xs text-neutral-500 mb-6 h-8 line-clamp-2 leading-relaxed">
-                        {c.desc}
-                    </p>
-
-                    <div className="flex items-end gap-3">
-                        <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden">
+                        {/* Progress Bar */}
+                        <div className="h-2 w-full bg-neutral-800 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                                style={{ width: `${c.score}%` }}
+                                className={`h-full rounded-full transition-all duration-1000 ${s.score > 60 ? 'bg-green-500' : s.score < 40 ? 'bg-red-500' : 'bg-yellow-500'}`}
+                                style={{ width: `${s.score}%` }}
                             />
                         </div>
-                        <span className="text-sm font-bold text-amber-500 font-mono w-8 text-right tabular-nums">{c.score.toFixed(0)}</span>
+
+                        <div className="flex justify-between mt-1.5">
+                            <span className="text-[10px] text-neutral-500 uppercase">{s.desc}</span>
+                            <span className={`text-[10px] font-bold ${s.score > 60 ? 'text-green-500' : s.score < 40 ? 'text-red-500' : 'text-yellow-500'}`}>
+                                {s.score > 60 ? 'BULLISH' : s.score < 40 ? 'BEARISH' : 'NEUTRAL'}
+                            </span>
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 }
