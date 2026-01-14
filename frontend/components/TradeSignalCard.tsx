@@ -10,7 +10,7 @@ interface Props {
 export default function TradeSignalCard({ data }: Props) {
     if (!data || !data.setup) return null;
 
-    const isLong = data.signal === 'LONG';
+    const isLong = data.signal_type === 'LONG';
 
     return (
         <div className="glass-panel p-6 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)] w-full max-w-md relative overflow-hidden group">

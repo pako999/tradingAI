@@ -1,19 +1,41 @@
-import LoginModal from './LoginModal';
+'use client';
 
-// ...
+import { createClient } from '@/lib/supabase';
+import { useState, useEffect } from 'react';
+import { User, LogIn, Crown } from 'lucide-react';
+import { Session, AuthChangeEvent } from '@supabase/supabase-js';
+import LoginModal from './LoginModal';
 
 export default function AuthButton() {
     const [session, setSession] = useState<Session | null>(null);
     const [showLogin, setShowLogin] = useState(false);
     const supabase = createClient();
 
-    // ... useEffect ...
+    useEffect(() => {
+        // Get initial session
+        const getSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setSession(session);
+        };
+        getSession();
+
+        // Listen for changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+            setSession(session);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
 
     const handleLogin = () => {
         setShowLogin(true);
     };
 
-    // ... handleLogout ...
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+    };
 
     if (!session) {
         return (
