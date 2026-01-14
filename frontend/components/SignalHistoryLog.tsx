@@ -85,8 +85,8 @@ export default function SignalHistoryLog({ ticker }: Props) {
                                             <span className="flex items-center gap-1 text-neutral-500">PENDING</span>
                                         )}
                                     </td>
-                                    <td className={`py-3 text-right pr-2 font-bold ${s.pnl_percent > 0 ? 'text-green-400' : s.pnl_percent < 0 ? 'text-red-400' : 'text-neutral-500'}`}>
-                                        {s.pnl_percent > 0 ? '+' : ''}{s.pnl_percent}%
+                                    <td className={`py-3 text-right pr-2 font-bold ${(s.pnl_percent || 0) > 0 ? 'text-green-400' : (s.pnl_percent || 0) < 0 ? 'text-red-400' : 'text-neutral-500'}`}>
+                                        {(s.pnl_percent || 0) > 0 ? '+' : ''}{s.pnl_percent || 0}%
                                     </td>
                                 </tr>
                             ))
