@@ -29,8 +29,8 @@ export default function SignalHistoryLog({ ticker }: Props) {
         // Initial Fetch
         fetchHistory();
 
-        // Real-Time Polling (Every 10s)
-        const interval = setInterval(fetchHistory, 10000);
+        // Real-Time Polling (Every 5s - Fast & Active)
+        const interval = setInterval(fetchHistory, 5000);
 
         return () => clearInterval(interval);
     }, [ticker]);
