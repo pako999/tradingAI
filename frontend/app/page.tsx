@@ -11,6 +11,7 @@ import SignalHistoryLog from '@/components/SignalHistoryLog';
 import AuthButton from '@/components/AuthButton';
 import { Zap, Lock, Rocket, Smartphone } from 'lucide-react';
 import PricingModal from '@/components/PricingModal';
+import NewsFeed from '@/components/NewsFeed';
 
 export default function Home() {
   const [data, setData] = useState<AnalysisResult | null>(null);
@@ -192,6 +193,11 @@ export default function Home() {
 
         </div>
       )}
+
+      {/* Global News Feed */}
+      <div className="w-full max-w-7xl mt-12 mb-20 z-10">
+        <NewsFeed />
+      </div>
 
       {/* Background Decor */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
