@@ -16,7 +16,19 @@ def run_prediction_cycle():
     """
     logger.info("⚡️ Running AlphaPulse Prediction Cycle...")
     db = SessionLocal()
-    tickers = ["BTC", "ETH", "SOL"]
+    # Top 100 Coins (Majors + Trending Alts + Memes)
+    tickers = [
+        "BTC", "ETH", "SOL", "BNB", "XRP", "ADA", "AVAX", "DOGE", "DOT", "LINK",
+        "MATIC", "SHIB", "LTC", "TRX", "UNI", "ATOM", "XLM", "ETC", "FIL", "NEAR",
+        "VET", "ALGO", "ICP", "STX", "AAVE", "QNT", "GRT", "FTM", "EOS", "SAND",
+        "MANA", "THETA", "EGLD", "AXS", "XTZ", "RUNE", "CAKE", "FLOW", "HBAR", "KCS",
+        "MKR", "BSV", "KLAY", "IOTA", "NEO", "CRV", "LDO", "APT", "ARB", "OP",
+        "INJ", "RNDR", "PEPE", "WIF", "BONK", "FLOKI", "SUI", "SEI", "TIA", "BLUR",
+        "DYDX", "IMX", "SNX", "GMX", "KAS", "WOO", "FET", "AGIX", "OCEAN", "JASMY",
+        "CFX", "GALA", "CHZ", "MINA", "COMP", "DASH", "ZEC", "NOT", "TON", "BCH",
+        "LEO", "OKB", "CRO", "LUNC", "BTT", "XMR", "TUSD", "USDD", "FDUSD", "GNO",
+        "AR", "ROSE", "GLM", "BAT", "ENJ", "ZIL", "TFUEL", "QTUM", "ANKR", "WAVES"
+    ]
     
     try:
         for ticker in tickers:
