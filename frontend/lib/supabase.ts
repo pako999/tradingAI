@@ -1,8 +1,8 @@
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 
-// NOTE: These environment variables need to be set in .env.local
-// NEXT_PUBLIC_SUPABASE_URL
-// NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-export const createClient = () => createClientComponentClient();
+export const createClient = () =>
+    createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
