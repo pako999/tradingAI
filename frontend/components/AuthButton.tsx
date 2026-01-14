@@ -1,57 +1,32 @@
-'use client';
+import LoginModal from './LoginModal';
 
-import { createClient } from '@/lib/supabase';
-import { useState, useEffect } from 'react';
-import { User, LogIn, Crown } from 'lucide-react';
-import { Session, AuthChangeEvent } from '@supabase/supabase-js';
+// ...
 
 export default function AuthButton() {
     const [session, setSession] = useState<Session | null>(null);
+    const [showLogin, setShowLogin] = useState(false);
     const supabase = createClient();
 
-    useEffect(() => {
-        // Get initial session
-        const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
-        };
-        getSession();
+    // ... useEffect ...
 
-        // Listen for changes
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-            setSession(session);
-        });
-
-        return () => subscription.unsubscribe();
-    }, [supabase]);
-
-    const handleLogin = async () => {
-        // For demo/dev purposes, we might not have keys set. 
-        // This would trigger the real Supabase OAuth flow.
-        console.log("Triggering Supabase Login...");
-        await supabase.auth.signInWithOAuth({
-            provider: 'github', // or google
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`
-            }
-        });
+    const handleLogin = () => {
+        setShowLogin(true);
     };
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-    };
+    // ... handleLogout ...
 
     if (!session) {
         return (
-            <button
-                onClick={handleLogin}
-                className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-300 hover:text-white hover:border-amber-500/50 transition-all font-mono text-xs"
-            >
-                <LogIn className="w-3 h-3" />
-                CONNECT
-            </button>
+            <>
+                <button
+                    onClick={handleLogin}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-300 hover:text-white hover:border-amber-500/50 transition-all font-mono text-xs"
+                >
+                    <LogIn className="w-3 h-3" />
+                    CONNECT
+                </button>
+                <LoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} />
+            </>
         );
     }
 
