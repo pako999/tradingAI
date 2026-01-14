@@ -10,6 +10,7 @@ import TradeSignalCard from '@/components/TradeSignalCard';
 import SignalHistoryLog from '@/components/SignalHistoryLog';
 import AuthButton from '@/components/AuthButton';
 import { Zap, Lock } from 'lucide-react';
+import PricingModal from '@/components/PricingModal';
 
 export default function Home() {
   const [data, setData] = useState<AnalysisResult | null>(null);
@@ -44,12 +45,18 @@ export default function Home() {
     }
   };
 
+
+  const [showPricing, setShowPricing] = useState(false);
+
   return (
     <main className="min-h-screen flex flex-col items-center p-8 md:p-12 relative overflow-hidden bg-[#050505]">
       {/* Top Bar */}
       <div className="absolute top-6 right-8 z-20">
         <AuthButton />
       </div>
+
+      {/* Pricing Modal */}
+      <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
 
       {/* Header */}
       <div className="text-center z-10 mb-8">
@@ -81,10 +88,20 @@ export default function Home() {
           <div className="md:col-span-4 flex flex-col gap-6">
             {signal && <TradeSignalCard data={signal} />}
 
-            <div className="glass-panel p-6 border-amber-500/10 relative overflow-hidden h-fit">
-              <div className="absolute top-0 right-0 p-2 opacity-50"><Lock className="w-4 h-4 text-neutral-600" /></div>
-              <h3 className="text-neutral-400 font-bold mb-4 text-sm">INSTITUTIONAL FLOW</h3>
-              <div className="space-y-3">
+            {/* Clickable Lock Logic Area */}
+            <div
+              onClick={() => setShowPricing(true)}
+              className="glass-panel p-6 border-amber-500/10 relative overflow-hidden h-fit cursor-pointer hover:border-amber-500/30 transition-all group"
+            >
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+              <div className="absolute top-0 right-0 p-3 z-10">
+                <div className="bg-neutral-900 rounded-full p-1.5 border border-neutral-700 group-hover:border-amber-500 transition-colors">
+                  <Lock className="w-3 h-3 text-neutral-400 group-hover:text-amber-500" />
+                </div>
+              </div>
+
+              <h3 className="text-neutral-400 font-bold mb-4 text-sm blur-[2px] group-hover:blur-0 transition-all">INSTITUTIONAL FLOW</h3>
+              <div className="space-y-3 blur-sm group-hover:blur-md transition-all">
                 <div className="flex justify-between text-xs border-b border-white/5 pb-2">
                   <span className="text-neutral-500">BlackRock IBIT</span>
                   <span className="text-green-400">+$45.2M (1h)</span>
@@ -97,6 +114,11 @@ export default function Home() {
                   <span className="text-neutral-500">Coinbase Custody</span>
                   <span className="text-amber-500">Active Accumulation</span>
                 </div>
+              </div>
+
+              {/* Lock Overlay Content */}
+              <div className="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">UNLOCK ALPHA</span>
               </div>
             </div>
           </div>
