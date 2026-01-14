@@ -52,20 +52,20 @@ export default function AuthButton() {
         );
     }
 
+    import Link from 'next/link';
+
+    // ... other imports ...
+
+    // ...
+
     return (
         <div className="flex items-center gap-4">
-            {/* Upgrade Button (Mock logic for now, assumes everyone is FREE tier initially) */}
-            <button className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-600 text-white font-bold hover:bg-amber-500 transition-all font-mono text-xs shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                <Crown className="w-3 h-3 fill-current" />
-                UPGRADE PRO
-            </button>
-
-            <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-neutral-500 hover:text-neutral-300 transition-colors text-xs font-mono"
-            >
-                SIGNOUT
-            </button>
+            <Link href="/profile">
+                <button className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-amber-500 transition-all font-mono text-xs group">
+                    <User className="w-3 h-3 group-hover:text-amber-500" />
+                    MY PROFILE
+                </button>
+            </Link>
         </div>
     );
 }
