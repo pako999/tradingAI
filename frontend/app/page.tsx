@@ -12,11 +12,13 @@ import AuthButton from '@/components/AuthButton';
 import { Zap, Lock, Rocket, Smartphone } from 'lucide-react';
 import PricingModal from '@/components/PricingModal';
 import NewsFeed from '@/components/NewsFeed';
+import WhaleWatch from '@/components/WhaleWatch';
 
 export default function Home() {
   const [data, setData] = useState<AnalysisResult | null>(null);
   const [liquidity, setLiquidity] = useState<LiquidityZone[] | null>(null);
   const [signal, setSignal] = useState<ProSignal | null>(null);
+  const [ticker, setTicker] = useState('BTC');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,6 +29,7 @@ export default function Home() {
     setData(null);
     setLiquidity(null);
     setSignal(null);
+    setTicker(ticker);
 
     try {
       // Parallel fetch for speed
@@ -51,10 +54,15 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-8 md:p-12 relative overflow-hidden bg-[#050505]">
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+
       {/* Top Bar */}
       <div className="absolute top-6 right-8 z-20">
         <AuthButton />
       </div>
+
+      {/* Whale Watch Overlay */}
+      <WhaleWatch ticker={ticker} />
 
       {/* Pricing Modal */}
       <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
