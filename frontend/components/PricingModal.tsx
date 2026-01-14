@@ -123,47 +123,70 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
                     </div>
 
                     {/* Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                         {tiers.map((tier, i) => (
                             <div
                                 key={i}
-                                className={`relative flex flex-col p-8 rounded-2xl border ${tier.border} ${tier.bg} backdrop-blur-md transition-all hover:transform hover:-translate-y-1`}
+                                className={`group relative flex flex-col p-8 rounded-2xl border ${tier.border} ${tier.bg} backdrop-blur-xl transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl`}
                             >
+                                {/* Glow Effect behind active cards */}
+                                {i > 0 && (
+                                    <div className={`absolute inset-0 rounded-2xl opacity-20 blur-xl -z-10 transition-opacity group-hover:opacity-40 ${i === 1 ? 'bg-amber-500' : 'bg-purple-600'}`} />
+                                )}
+
                                 {/* Badge if exists */}
                                 {tier.badge && (
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${i === 1 ? 'bg-amber-500 text-black' : 'bg-purple-500 text-white'
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+                                        <div className={`px-6 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1 ${i === 1
+                                                ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-black shadow-amber-900/40'
+                                                : 'bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white shadow-purple-900/40'
                                             }`}>
+                                            {i === 1 && <Zap className="w-3 h-3 fill-current" />}
+                                            {i === 2 && <Crown className="w-3 h-3 fill-current" />}
                                             {tier.badge}
-                                        </span>
+                                        </div>
                                     </div>
                                 )}
 
-                                <div className="text-center mb-8">
-                                    <h3 className={`text-lg font-bold mb-2 ${tier.color}`}>{tier.name}</h3>
-                                    <div className="flex items-baseline justify-center gap-1 mb-2">
-                                        <span className="text-4xl font-bold text-white">${tier.price}</span>
-                                        <span className="text-neutral-500 text-sm">/mo</span>
+                                <div className="text-center mb-8 relative">
+                                    {/* Tier Icon */}
+                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-inner ${i === 0 ? 'from-neutral-800 to-neutral-900 border border-neutral-700' :
+                                            i === 1 ? 'from-amber-500/20 to-amber-900/20 border border-amber-500/30' :
+                                                'from-purple-500/20 to-purple-900/20 border border-purple-500/30'
+                                        }`}>
+                                        {i === 0 && <Shield className="w-8 h-8 text-neutral-400" />}
+                                        {i === 1 && <Zap className="w-8 h-8 text-amber-400 fill-amber-400/20" />}
+                                        {i === 2 && <Crown className="w-8 h-8 text-purple-400 fill-purple-400/20" />}
                                     </div>
-                                    <p className="text-xs text-neutral-500">{tier.description}</p>
+
+                                    <h3 className={`text-xl font-black tracking-wide mb-2 ${tier.color} drop-shadow-sm`}>{tier.name}</h3>
+                                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                                        <span className="text-4xl font-bold text-white tracking-tight">${tier.price}</span>
+                                        <span className="text-neutral-500 text-sm font-medium">/mo</span>
+                                    </div>
+                                    <p className="text-xs text-neutral-400 font-medium uppercase tracking-wider">{tier.description}</p>
                                 </div>
 
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    {tier.features.map((feat, j) => (
-                                        <li key={j} className="flex items-start gap-3 text-sm">
-                                            {tier.checks[j] ? (
-                                                <Check className={`w-4 h-4 mt-0.5 ${tier.color}`} />
-                                            ) : (
-                                                <X className="w-4 h-4 mt-0.5 text-neutral-700" />
-                                            )}
-                                            <span className={tier.checks[j] ? 'text-neutral-300' : 'text-neutral-600'}>
-                                                {feat}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <div className="flex-1 mb-8">
+                                    <ul className="space-y-4">
+                                        {tier.features.map((feat, j) => (
+                                            <li key={j} className="flex items-start gap-3 text-sm group/item">
+                                                <div className={`mt-0.5 rounded-full p-0.5 ${tier.checks[j] ? (i === 1 ? 'bg-amber-500/20' : i === 2 ? 'bg-purple-500/20' : 'bg-neutral-800') : ''}`}>
+                                                    {tier.checks[j] ? (
+                                                        <Check className={`w-3.5 h-3.5 ${tier.color}`} strokeWidth={3} />
+                                                    ) : (
+                                                        <X className="w-3.5 h-3.5 text-neutral-700" />
+                                                    )}
+                                                </div>
+                                                <span className={`transition-colors ${tier.checks[j] ? 'text-neutral-300 group-hover/item:text-white' : 'text-neutral-600'}`}>
+                                                    {feat}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
 
-                                <button className={`w-full py-3 rounded-xl text-sm tracking-wide transition-all ${tier.buttonStyle}`}>
+                                <button className={`w-full py-4 rounded-xl text-sm font-bold tracking-wider transition-all transform active:scale-95 ${tier.buttonStyle}`}>
                                     {tier.button}
                                 </button>
                             </div>

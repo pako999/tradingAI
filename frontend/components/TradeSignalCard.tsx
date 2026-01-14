@@ -8,6 +8,8 @@ interface Props {
 }
 
 export default function TradeSignalCard({ data }: Props) {
+    if (!data || !data.setup) return null;
+
     const isLong = data.signal === 'LONG';
 
     return (
