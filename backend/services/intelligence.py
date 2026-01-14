@@ -16,36 +16,59 @@ class AlphaIntelligenceEngine:
         # Mock model state
         self.last_training = datetime.now()
 
-    def _get_binance_data(self, ticker: str):
+    def _get_market_data(self, ticker: str):
         """
-        Fetches Real-Time Price & 24h Stats from Binance.
+        Fetches Real-Time Price & Stats.
+        Strategy:
+        1. Try Binance (Best for Majors: BTC, ETH, SOL)
+        2. Fallback to DexScreener (Best for Memes/Alts)
         """
+        # 1. Try Binance
         symbol = f"{ticker}USDT".upper()
         try:
-            # Get Ticker Stats (Price, 24h Change, Volume)
             url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={symbol}"
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=3)
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "source": "Binance",
+                    "price": float(data['lastPrice']),
+                    "change_percent": float(data['priceChangePercent']),
+                    "volume": float(data['quoteVolume']),
+                    "high": float(data['highPrice']),
+                    "low": float(data['lowPrice'])
+                }
+        except Exception:
+            pass # Fail silently and try DexScreener
+            
+        # 2. Try DexScreener (Universal Fallback)
+        try:
+            # Search for the pair
+            search_url = f"https://api.dexscreener.com/latest/dex/search?q={ticker}"
+            response = requests.get(search_url, timeout=5)
             data = response.json()
             
-            if "symbol" not in data:
-                return None
-                
-            return {
-                "price": float(data['lastPrice']),
-                "change_percent": float(data['priceChangePercent']),
-                "volume": float(data['quoteVolume']), # Volume in USDT
-                "high": float(data['highPrice']),
-                "low": float(data['lowPrice'])
-            }
+            if data['pairs']:
+                # Get the most liquid pair
+                best_pair = data['pairs'][0]
+                return {
+                    "source": "DexScreener",
+                    "price": float(best_pair['priceUsd']),
+                    "change_percent": float(best_pair['priceChange']['h24']),
+                    "volume": float(best_pair['volume']['h24']),
+                    "high": float(best_pair['priceUsd']) * 1.05, # Approx
+                    "low": float(best_pair['priceUsd']) * 0.95   # Approx
+                }
         except Exception as e:
-            print(f"Binance API Error: {e}")
-            return None
+            print(f"DexScreener API Error: {e}")
+            
+        return None
 
     def get_tft_forecast(self, ticker: str):
         """
         Returns P10, P50, P90 price targets using REAL price as baseline.
         """
-        market_data = self._get_binance_data(ticker)
+        market_data = self._get_market_data(ticker)
         
         # Fallback to mock if API fails or coin doesn't exist on Binance
         if not market_data:
@@ -85,7 +108,7 @@ class AlphaIntelligenceEngine:
         """
         Returns mock data but centered around REAL price.
         """
-        market_data = self._get_binance_data(ticker)
+        market_data = self._get_market_data(ticker)
         current_price = market_data['price'] if market_data else 100.0
         
         zones = []
@@ -114,7 +137,7 @@ class AlphaIntelligenceEngine:
         """
         Generates a Trade Card using Real Data Analysis.
         """
-        market_data = self._get_binance_data(ticker)
+        market_data = self._get_market_data(ticker)
         if not market_data:
             return {"error": "Ticker not found"}
 
