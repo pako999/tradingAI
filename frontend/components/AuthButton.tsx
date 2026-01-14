@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { User, LogIn, Crown } from 'lucide-react';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import LoginModal from './LoginModal';
+import Link from 'next/link';
 
 export default function AuthButton() {
     const [session, setSession] = useState<Session | null>(null);
@@ -51,12 +52,6 @@ export default function AuthButton() {
             </>
         );
     }
-
-    import Link from 'next/link';
-
-    // ... other imports ...
-
-    // ...
 
     return (
         <div className="flex items-center gap-4">
