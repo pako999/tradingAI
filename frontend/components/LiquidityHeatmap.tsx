@@ -35,8 +35,8 @@ export default function LiquidityHeatmap({ data }: Props) {
                         {/* Heat Bar */}
                         <div
                             className={`w-16 rounded-t-sm transition-all duration-500 group-hover:scale-110 
-                ${zone.liquidity_intensity === 'Extreme' ? 'h-32 bg-gradient-to-t from-red-600 to-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]' :
-                                    zone.liquidity_intensity === 'High' ? 'h-24 bg-gradient-to-t from-orange-600 to-orange-400 opacity-90' : 'h-16 bg-gradient-to-t from-yellow-600 to-yellow-400 opacity-80'}`}
+                ${(zone.intensity || 0) > 80 ? 'h-32 bg-gradient-to-t from-red-600 to-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]' :
+                                    (zone.intensity || 0) > 50 ? 'h-24 bg-gradient-to-t from-orange-600 to-orange-400 opacity-90' : 'h-16 bg-gradient-to-t from-yellow-600 to-yellow-400 opacity-80'}`}
                         >
                             <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-3 py-1.5 rounded shadow-xl text-center min-w-[120px] transition-opacity pointer-events-none z-20 backdrop-blur-md">
                                 <div className="text-[10px] text-neutral-400 font-mono">{zone.type}</div>
