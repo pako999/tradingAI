@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 import os
 import random
 from datetime import datetime, timedelta
+import requests
+import xml.etree.ElementTree as ET
 from engine import WeightedConsensusEngine
 
 @asynccontextmanager
@@ -145,6 +147,42 @@ def get_liquidity_map(ticker: str, tier: str = "FREE"):
     if tier != "PRO":
         return {"error": "Upgrade to PRO for Liquidity Maps"}
     return ai_engine.get_liquidation_heatmap(ticker.upper())
+
+@app.get("/news")
+def get_crypto_news():
+    """
+    Fetches latest crypto news from CoinTelegraph RSS.
+    """
+    try:
+        response = requests.get("https://cointelegraph.com/rss", timeout=5)
+        root = ET.fromstring(response.content)
+        
+        news_items = []
+        # Namespaces for media parsing
+        namespaces = {'media': 'http://search.yahoo.com/mrss/'}
+
+        for item in root.findall('./channel/item')[:4]:
+            title = item.find('title').text
+            link = item.find('link').text
+            pub_date = item.find('pubDate').text
+            
+            # Try to get image
+            image_url = None
+            media = item.find('media:content', namespaces)
+            if media is not None:
+                image_url = media.get('url')
+            
+            news_items.append({
+                "title": title,
+                "url": link,
+                "published_at": pub_date,
+                "image_url": image_url
+            })
+            
+        return news_items
+    except Exception as e:
+        print(f"News Fetch Error: {e}")
+        return []
 
 if __name__ == "__main__":
     import uvicorn
